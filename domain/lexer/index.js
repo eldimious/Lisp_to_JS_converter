@@ -1,7 +1,7 @@
 const {
   LEFT_PARETHENSIS,
   RIGHT_PARETHENSIS,
-  EOF,
+  STOP_COMPILE,
 } = require('../../common/utils');
 
 
@@ -25,7 +25,7 @@ function init(input) {
 
   function getCharacter() {
     if (pos >= lispString.length) {
-      return EOF;
+      return STOP_COMPILE;
     }
     return lispString.charAt(pos);
   }
@@ -52,7 +52,7 @@ function init(input) {
   function findIdent() {
     let char = getCharacter();
     let str = '';
-    while (char !== EOF && char.match(/[a-z0-9\-+=*\/\\.]/)) {
+    while (char !== STOP_COMPILE && char.match(/[a-z0-9\-+=*\/\\.]/)) {
       str += char;
       getNextCharacter();
       char = getCharacter();
@@ -62,7 +62,7 @@ function init(input) {
 
   function listLexers() {
     let char = getCharacter();
-    while (char !== EOF) {
+    while (char !== STOP_COMPILE) {
       if (char === LEFT_PARETHENSIS) {
         getNextCharacter();
         char = getCharacter();
@@ -80,10 +80,10 @@ function init(input) {
         char = getCharacter();
       } else {
         char = getCharacter();
-        return EOF;
+        return STOP_COMPILE;
       }
     }
-    return EOF;
+    return STOP_COMPILE;
   }
 
   return {

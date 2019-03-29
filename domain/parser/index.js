@@ -1,5 +1,5 @@
 const {
-  EOF,
+  STOP_COMPILE,
 } = require('../../common/utils');
 const lexerService = require('../lexer');
 
@@ -9,25 +9,22 @@ function init() {
     let token = lexer.listLexers();
     let form = [];
     const stack = [];
-    while (token !== EOF) {
+    while (token !== STOP_COMPILE) {
       switch (token[0]) {
         case 'LEFT_PARETHENSIS':
-          console.log('LEFT_PARETHENSIS')
           let newform = [];
           form.push(newform);
           stack.push(form);
           form = newform;
-          token = lexer.listLexers()
+          token = lexer.listLexers();
           break;
         case 'RIGHT_PARETHENSIS':
-          console.log('RIGHT_PARETHENSIS')
           form = stack.pop();
-          token = lexer.listLexers()
+          token = lexer.listLexers();
           break;
         default:
-          console.log('default')
           form.push(token[1]);
-          token = lexer.listLexers()
+          token = lexer.listLexers();
           break;
       }
     }
