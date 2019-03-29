@@ -52,7 +52,7 @@ function init(input) {
   function findIdent() {
     let char = getCharacter();
     let str = '';
-    while (char !== EOF && char.match(/[a-z0-9\-+=\.]/)) {
+    while (char !== EOF && char.match(/[a-z0-9\-+=*\/\\.]/)) {
       str += char;
       getNextCharacter();
       char = getCharacter();
@@ -71,7 +71,7 @@ function init(input) {
         getNextCharacter();
         char = getCharacter();
         return ['RIGHT_PARETHENSIS', RIGHT_PARETHENSIS];
-      } else if (char.match(/[a-z0-9\-+=\.]/)) { ///^[a-z0-9]+$/ /[a-z\-\.]/
+      } else if (char.match(/[a-z0-9\-+=*\/\\.]/)) {
         console.log('12312312312312321132')
         char = getCharacter();
         return ['IDENT', findIdent()];

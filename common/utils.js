@@ -6,7 +6,12 @@ const EOF = -1;
 function mapLispOperatorsToJSOperators() {
   return {
     '+': '+',
+    '*': '*',
+    '/': '/',
     '-': '-',
+    mod: '%',
+    incf: '+',
+    decf: '-',
     '=': '===',
     and: '&&',
     or: '||',

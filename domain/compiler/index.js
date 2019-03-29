@@ -1,15 +1,20 @@
 const parserService = require('../parser');
 const {
-mapLispOperatorsToJSOperators
+  mapLispOperatorsToJSOperators,
 } = require('../../common/utils');
 
 function init() {
   function shouldAddParen(el) {
     return !(el !== '='
       && el !== 'and'
+      && el !== 'mod'
+      && el !== 'incf'
+      && el !== 'decf'
       && el !== 'or'
       && el !== '+'
       && el !== '-'
+      && el !== '*'
+      && el !== '/'
       && el !== 'defvar'
       && el !== 'defconstant'
       && el !== 'begin'
@@ -43,6 +48,11 @@ function init() {
         }
       case '=':
       case 'and':
+      case 'mod':
+      case 'incf':
+      case 'decf':
+      case '*':
+      case '/':
       case 'or':
       case '+':
       case '-':
@@ -75,13 +85,13 @@ function init() {
       console.log("if form requires 3 elements");
       return;
     }
-    var output = "";
-    output += "(function() { ";
-    output += "if (" + compile(node[1]) + ") { return " + compile(node[2]) + "; } ";
-    if (node.length == 4) {
-      output += "else { return " + compile(node[3]) + "} ";
+    let output = '';
+    output += '(function() { ';
+    output += `if (${compile(node[1])}) { return ${compile(node[2])}; } `;
+    if (node.length === 4) {
+      output += `else { return ${compile(node[3])}} `;
     }
-    output += "})()";
+    output += '})();';
     return output;
   }
 
@@ -93,8 +103,6 @@ function init() {
   }
 
   function compileOperatorExpression(node, op) {
-    console.log('compile_binary_op')
-    console.log('SOSTO')
     const el = [...[], ...node.slice(1)].map(n => compile(n)).join(` ${op} `);
     return `(${el})`;
   }
