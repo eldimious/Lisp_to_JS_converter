@@ -49,7 +49,7 @@ function init(input) {
     }
   }
 
-  function findIdent() {
+  function findLexer() {
     let char = getCharacter();
     let str = '';
     while (char !== STOP_COMPILE && char.match(/[a-z0-9\-+=*\/\\.]/)) {
@@ -72,9 +72,8 @@ function init(input) {
         char = getCharacter();
         return ['RIGHT_PARETHENSIS', RIGHT_PARETHENSIS];
       } else if (char.match(/[a-z0-9\-+=*\/\\.]/)) {
-        console.log('12312312312312321132')
         char = getCharacter();
-        return ['IDENT', findIdent()];
+        return ['CHARACTER', findLexer()];
       } else if (isSpace(char)) {
         findSpace();
         char = getCharacter();

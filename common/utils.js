@@ -1,6 +1,6 @@
 const LEFT_PARETHENSIS = '(';
 const RIGHT_PARETHENSIS = ')';
-const IDENT = 'IDENT';
+const CHARACTER = 'CHARACTER';
 const STOP_COMPILE = null;
 
 function mapLispOperatorsToJSOperators() {
@@ -41,7 +41,7 @@ function shouldAddParethensis(el) {
 module.exports = {
   LEFT_PARETHENSIS,
   RIGHT_PARETHENSIS,
-  IDENT,
+  CHARACTER,
   STOP_COMPILE,
   mapLispOperatorsToJSOperators,
   shouldAddParethensis,

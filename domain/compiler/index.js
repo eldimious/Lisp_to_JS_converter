@@ -83,15 +83,8 @@ function init() {
     try {
       const parser = parserService();
       const parsedArray = parser.parse(input);
-      console.log('ast', parsedArray)
-      console.log('ast', parsedArray.length)
-      let output = '';
-      for (let i = 0; i < parsedArray.length; i++) {
-        console.log('i', parsedArray[i])
-        console.log('aaa', compile(parsedArray[i]));
-        output += compile(parsedArray[i]);
-      }
-      return output;
+      return parsedArray
+        .reduce((acc, currentValue) => acc + compile(currentValue), '');
     } catch (error) {
       throw error;
     }
