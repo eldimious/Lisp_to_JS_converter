@@ -21,7 +21,7 @@ app.use(cors());
 
 module.exports = (services) => {
   app.use(express.static(path.join(__dirname, 'public')));
-  app.use('/', lispRoutes.init(services));
+  app.use('/api/v1', lispRoutes.init(services));
   app.use(errorRoute);
 
   const httpServer = http.createServer(app);

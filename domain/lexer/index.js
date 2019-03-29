@@ -2,16 +2,14 @@ const errors = require('../../common/errors');
 const {
   LEFT_PARETHENSIS,
   RIGHT_PARETHENSIS,
-  IDENT,
   EOF,
 } = require('../../common/utils');
 
 
-function init({ input }) {
+function init(input) {
   const lispString = input;
   let line = 1;
   let column = 1;
-  let token = '';
   let pos = 0;
 
   function isSpace(char) {
@@ -40,42 +38,48 @@ function init({ input }) {
       column = 0;
     }
     pos += 1;
-    column += 1;
+    column += column;
     return getCharacter();
   }
 
   function findSpace() {
-    while (isSpace(getCharacter())) {
+    let char = getCharacter();
+    while (isSpace(char)) {
       getNextCharacter();
+      char = getCharacter();
     }
   }
 
   function findIdent() {
     let char = getCharacter();
-    token = '';
+    let str = '';
     while (char !== EOF && char.match(/[a-z\-\.]/)) {
-      token += char;
-      char = getCharacter();
+      str += char;
       getNextCharacter();
+      char = getCharacter();
     }
-    return token;
+    return str;
   }
 
-  function getLexers() {
+  function listLexers() {
     let char = getCharacter();
     while (char !== EOF) {
-      char = getCharacter();
       if (char === LEFT_PARETHENSIS) {
         getNextCharacter();
+        char = getCharacter();
         return ['LEFT_PARETHENSIS', LEFT_PARETHENSIS];
       } else if (char === RIGHT_PARETHENSIS) {
         getNextCharacter();
+        char = getCharacter();
         return ['RIGHT_PARETHENSIS', RIGHT_PARETHENSIS];
       } else if (char.match(/[a-z\-\.]/)) {
+        char = getCharacter();
         return ['IDENT', findIdent()];
       } else if (isSpace(char)) {
         findSpace();
+        char = getCharacter();
       } else {
+        char = getCharacter();
         return EOF;
       }
     }
@@ -83,9 +87,8 @@ function init({ input }) {
   }
 
   return {
-    getLexers,
+    listLexers,
   };
 }
-
 
 module.exports = init;

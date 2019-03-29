@@ -2,9 +2,11 @@ const express = require('express');
 
 const router = express.Router({ mergeParams: true });
 
-function init({ authService }) {
+function init({
+  compilerService,
+}) {
   router.post('isValidLisp', (req, res) => {
-    const result = authService.register({
+    const result = compilerService.register({
       name: req.body.name,
       surname: req.body.surname,
       username: req.body.username,
@@ -16,16 +18,10 @@ function init({ authService }) {
     });
   });
 
-  router.post('convertToJS', (req, res) => {
-    const result = authService.login({
-      email: req.body.email,
-      password: req.body.password,
-    });
+  router.post('/convertToJS', (req, res) => {
+    const result = compilerService.start(req.body.input);
     return res.send({
-      data: {
-        token: result.token,
-        user: result.user,
-      },
+      data: result,
     });
   });
 
