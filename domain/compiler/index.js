@@ -3,6 +3,7 @@ const {
   mapLispOperatorsToJSOperators,
   shouldAddParethensis,
 } = require('../../common/utils');
+const errors = require('../../common/errors');
 
 function init() {
   function compile(root) {
@@ -51,8 +52,7 @@ function init() {
 
   function compileIfExpression(node) {
     if (node.length < 3) {
-      console.log("if form requires 3 elements");
-      return;
+      throw new errors.BadRequest('If block requires 3 elements');
     }
     let output = '';
     output += '(function() { ';
@@ -66,8 +66,7 @@ function init() {
 
   function compileFunctionExpression(node) {
     if (node.length < 4) {
-      console.log("if form requires 4 elements");
-      return;
+      throw new errors.BadRequest('Function declaration requires 4 elements');
     }
     const fnName = node[1];
     const params = node[2].slice(0).join(', ');
@@ -81,17 +80,21 @@ function init() {
   }
 
   function start(input) {
-    const parser = parserService();
-    const parsedArray = parser.parse(input);
-    console.log('ast', parsedArray)
-    console.log('ast', parsedArray.length)
-    let output = '';
-    for (let i = 0; i < parsedArray.length; i++) {
-      console.log('i', parsedArray[i])
-      console.log('aaa', compile(parsedArray[i]));
-      output += compile(parsedArray[i]);
+    try {
+      const parser = parserService();
+      const parsedArray = parser.parse(input);
+      console.log('ast', parsedArray)
+      console.log('ast', parsedArray.length)
+      let output = '';
+      for (let i = 0; i < parsedArray.length; i++) {
+        console.log('i', parsedArray[i])
+        console.log('aaa', compile(parsedArray[i]));
+        output += compile(parsedArray[i]);
+      }
+      return output;
+    } catch (error) {
+      throw error;
     }
-    return output;
   }
   return {
     start,
