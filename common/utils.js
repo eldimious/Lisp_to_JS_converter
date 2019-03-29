@@ -18,6 +18,24 @@ function mapLispOperatorsToJSOperators() {
   };
 }
 
+function listLispReservedWords() {
+  return [
+    'and',
+    'mod',
+    'incf',
+    'decf',
+    'defvar',
+    'defconstant',
+    'if',
+    'defun',
+    '=',
+    '+',
+    '-',
+    '*',
+    '/',
+  ];
+}
+
 function shouldAddParethensis(el) {
   return !(el !== '='
     && el !== 'and'
@@ -31,7 +49,6 @@ function shouldAddParethensis(el) {
     && el !== '/'
     && el !== 'defvar'
     && el !== 'defconstant'
-    && el !== 'begin'
     && el !== 'if'
     && el !== 'defun'
   );
@@ -45,4 +62,5 @@ module.exports = {
   STOP_COMPILE,
   mapLispOperatorsToJSOperators,
   shouldAddParethensis,
+  listLispReservedWords,
 };
