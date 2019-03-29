@@ -1,0 +1,19 @@
+{
+  "name": "lisp_to_js_converter_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eldimious/Lisp_to_JS_converter_API.git"
+  },
+  "author": "Dimos Botsaris <botsaris.d@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eldimious/Lisp_to_JS_converter_API/issues"
+  },
+  "homepage": "https://github.com/eldimious/Lisp_to_JS_converter_API#readme"
+}
