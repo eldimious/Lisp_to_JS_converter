@@ -41,7 +41,7 @@ module.exports = class EndpointValidator {
         return errorHandler(new errors.Forbidden(`${result.array({ onlyFirstError: true })[0].msg}`), req, res, next);
       }
       const subString = req.body.input.substring(req.body.input.indexOf('(') + 1);
-      if (!this.settings.customValidators.startsWithAny(listLispReservedWords, subString)) {
+      if (!this.settings.customValidators.startsWithAny(listLispReservedWords(), subString)) {
         return errorHandler(new errors.BadRequest(400, 'You should add a valid lisp input.'), req, res, next);
       }
       return next();

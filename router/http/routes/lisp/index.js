@@ -1,24 +1,19 @@
 const express = require('express');
+const EndpointValidator = require('../../middleware/endpointValidator');
 
+const endpointValidator = new EndpointValidator();
 const router = express.Router({ mergeParams: true });
 
 function init({
   compilerService,
 }) {
-  router.post('isValidLisp', (req, res) => {
-    const result = compilerService.register({
-      name: req.body.name,
-      surname: req.body.surname,
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-    });
+  router.post('/isValidLisp', (...args) => endpointValidator.requireValidLispInput(...args), (req, res) => {
     return res.send({
-      data: result,
+      data: 'Correct LISP input',
     });
   });
 
-  router.post('/convertToJS', (req, res) => {
+  router.post('/convertToJS', (...args) => endpointValidator.requireValidLispInput(...args), (req, res) => {
     const result = compilerService.start(req.body.input);
     return res.send({
       data: result,
