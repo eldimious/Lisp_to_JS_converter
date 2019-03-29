@@ -6,25 +6,36 @@ const _ = require("underscore");
 const parserService = require('../parser');
 
 function init() {
-  let output = '';
-
+  function shouldAddParen(el) {
+    return !(
+      el !== "equals"
+      && el !== "and"
+      && el !=="or" 
+      && el !=="add"
+      && el !=="sub" 
+      && el !=="define"
+      && el !=="begin"
+      && el !=="if"
+      && el !=="fn")
+  }
   function compile(root) {
-    if (!root[0]) {
-      return "" + root + "";
+    if (!shouldAddParen(root[0])) {
+      return "(" + root + ")";
     }
     switch (root[0]) {
       case 'define':
       case 'begin':
       case 'if':
       case 'fn':
+        console.log('root[0]', root[0])
         switch (root[0]) {
-          case 'compile_define_form':
+          case 'define':
             return compile_define_form(root);
-          case 'compile_begin_form':
+          case 'begin':
             return compile_begin_form(root);
-          case 'compile_if_form':
+          case 'if':
             return compile_if_form(root);
-          case 'compile_fn_form':
+          case 'fn':
             return compile_fn_form(root); 
         }
       case 'equals':
@@ -42,18 +53,19 @@ function init() {
   }
 
   function compile_define_form(node) {
-    var output = "";
-    output += "var " + node[1] + " = " + compile(node[2]) + ";";
-    return output;
+    console.log('compile_define_form SOSTO')
+    return `let ${node[1]} = ${compile(node[2])};`
   }
 
   function compile_begin_form(node) {
+    console.log('compile_begin_form')
     var forms = _.map(node.slice(1), (n) => compiler.compile(n));
     forms[forms.length-1] = "return " + forms[forms.length-1];
     return "(function() { " + forms.join("; ") + "})()";
   }
 
   function compile_if_form(node) {
+    console.log('compile_if_form')
     if (node.length < 3) {
       console.log("if form requires 3 elements");
       return;
@@ -69,16 +81,20 @@ function init() {
   }
 
   function compile_fn_form(node) {
+    console.log('compile_fn_form')
     var output = "function(" + node[1].slice(0).join(", ") + ") { return " + compile(node[2]) + "; }";
     return output;
   }
 
   function compile_binary_op(node, op) {
-    var tests = _.map(node.slice(1), (n) => compile(n));
-    return "(" + tests.join(" " + op + " ") + ")";
+    console.log('compile_binary_op')
+    console.log('SOSTO')
+    const el = [...[], ...node.slice(1)].map(n => compile(n)).join(` ${op} `);
+    return `(${el})`;
   }
 
   function compile_js_layer(node, form) {
+    console.log('compile_js_layer')
     return compile(node[2]) + "." + compile(node[1]);
   }
 
