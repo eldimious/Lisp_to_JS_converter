@@ -1,71 +1,76 @@
-const errors = require('../../common/errors');
-const {
-  EOF,
-} = require('../../common/utils');
-const _ = require("underscore");
 const parserService = require('../parser');
+const {
+mapLispOperatorsToJSOperators
+} = require('../../common/utils');
 
 function init() {
   function shouldAddParen(el) {
-    return !(
-      el !== "equals"
-      && el !== "and"
-      && el !=="or" 
-      && el !=="add"
-      && el !=="sub" 
-      && el !=="define"
-      && el !=="begin"
-      && el !=="if"
-      && el !=="fn")
+    return !(el !== '='
+      && el !== 'and'
+      && el !== 'or'
+      && el !== '+'
+      && el !== '-'
+      && el !== 'defvar'
+      && el !== 'defconstant'
+      && el !== 'begin'
+      && el !== 'if'
+      && el !== 'defun'
+    );
   }
+
   function compile(root) {
     if (!shouldAddParen(root[0])) {
-      return "(" + root + ")";
+      return `(${root})`;
     }
+    const operators = mapLispOperatorsToJSOperators();
     switch (root[0]) {
-      case 'define':
+      case 'defvar':
+      case 'defconstant':
       case 'begin':
       case 'if':
-      case 'fn':
-        console.log('root[0]', root[0])
+      case 'defun':
         switch (root[0]) {
-          case 'define':
-            return compile_define_form(root);
+          case 'defvar':
+            return compileDefineExpression(root);
+          case 'defconstant':
+            return compileDefineConstantExpression(root);
           case 'begin':
-            return compile_begin_form(root);
+            return compileBeginExpression(root);
           case 'if':
-            return compile_if_form(root);
-          case 'fn':
-            return compile_fn_form(root); 
+            return compileIfExpression(root);
+          case 'defun':
+            return compileFunctionExpression(root);
         }
-      case 'equals':
+      case '=':
       case 'and':
       case 'or':
-      case 'add':
-      case 'sub':
-        var table = {equals: "===", and: "&&", or: "||", add: "+", sub: "-"};
-        return compile_binary_op(root, table[root[0]]);
-      case '.':
-        return compile_js_layer(root, root[0]);
+      case '+':
+      case '-':
+        return compileOperatorExpression(root, operators[root[0]]);
       default:
         return `${root[0]}(${[[], ...root.slice(1)].map(n => compile(n)).join(', ')})`;
     }
   }
 
-  function compile_define_form(node) {
-    console.log('compile_define_form SOSTO')
-    return `let ${node[1]} = ${compile(node[2])};`
+  function compileBeginExpression(node) {
+    console.log('compileBeginExpression')
+    const elements = [...[], ...node.slice(1)].map(n => compile(n));
+    elements[elements.length - 1] = `return ${elements[elements.length - 1]}`;
+    return `(function() { ${elements.join('; ')}})()`;
   }
 
-  function compile_begin_form(node) {
-    console.log('compile_begin_form')
-    var forms = _.map(node.slice(1), (n) => compiler.compile(n));
-    forms[forms.length-1] = "return " + forms[forms.length-1];
-    return "(function() { " + forms.join("; ") + "})()";
+  function compileDefineExpression(node) {
+    console.log('compileDefineExpression SOSTO')
+    return `let ${node[1]} = ${compile(node[2])};`;
   }
 
-  function compile_if_form(node) {
-    console.log('compile_if_form')
+  function compileDefineConstantExpression(node) {
+    console.log('compileDefineConstantExpression SOSTO')
+    return `const ${node[1]} = ${compile(node[2])};`;
+  }
+
+  function compileIfExpression(node) {
+    console.log('compileIfExpression')
     if (node.length < 3) {
       console.log("if form requires 3 elements");
       return;
@@ -80,22 +85,18 @@ function init() {
     return output;
   }
 
-  function compile_fn_form(node) {
-    console.log('compile_fn_form')
-    var output = "function(" + node[1].slice(0).join(", ") + ") { return " + compile(node[2]) + "; }";
-    return output;
+  function compileFunctionExpression(node) {
+    const fnName = node[1];
+    const params = node[2].slice(0).join(', ');
+    const body = node[3];
+    return `function ${fnName}(${params}) { return ${compile(body)}; }`
   }
 
-  function compile_binary_op(node, op) {
+  function compileOperatorExpression(node, op) {
     console.log('compile_binary_op')
     console.log('SOSTO')
     const el = [...[], ...node.slice(1)].map(n => compile(n)).join(` ${op} `);
     return `(${el})`;
-  }
-
-  function compile_js_layer(node, form) {
-    console.log('compile_js_layer')
-    return compile(node[2]) + "." + compile(node[1]);
   }
 
   function start(input) {
