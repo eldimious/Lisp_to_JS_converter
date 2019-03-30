@@ -38,7 +38,7 @@ module.exports = class EndpointValidator {
     req.checkBody('input', 'Input should end with ).').endsWith(')');
     req.getValidationResult().then((result) => {
       if (!result.isEmpty()) {
-        return errorHandler(new errors.Forbidden(`${result.array({ onlyFirstError: true })[0].msg}`), req, res, next);
+        return errorHandler(new errors.BadRequest(`${result.array({ onlyFirstError: true })[0].msg}`), req, res, next);
       }
       const subString = req.body.input.substring(req.body.input.indexOf('(') + 1);
       if (!this.settings.customValidators.startsWithAny(listLispReservedWords(), subString)) {
