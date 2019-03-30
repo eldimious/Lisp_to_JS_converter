@@ -23,5 +23,4 @@ function init({
   return router;
 }
 
-
 module.exports.init = init;
