@@ -1,14 +1,10 @@
 module.exports = {
-  register: {
-    isValidLisp: {
+  isValidLisp: {
+    post: {
       tags: [
         'Compiler',
       ],
-      security: [
-        {
-          Bearer: [],
-        },
-      ],
+      security: false,
       description: 'Check if input is valid Lisp.',
       parameters: [
         {
@@ -61,11 +57,7 @@ module.exports = {
       tags: [
         'Compiler',
       ],
-      security: [
-        {
-          Bearer: [],
-        },
-      ],
+      security: false,
       description: 'Compile Lisp to JS.',
       parameters: [
         {

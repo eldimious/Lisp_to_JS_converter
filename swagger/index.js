@@ -36,10 +36,7 @@ module.exports = {
   },
   components,
   definitions: {
-    Pagination: definitions.Pagination,
-    Token: definitions.Token,
-    Post: definitions.Post,
-    User: definitions.User,
+    Output: definitions.Output,
     401: definitions.Errors[401],
     400: definitions.Errors[400],
     404: definitions.Errors[404],
