@@ -55,6 +55,21 @@ function shouldAddParethensis(el) {
 }
 
 
+function isOperator(el) {
+  return (el === '='
+    || el === 'and'
+    || el === 'mod'
+    || el === 'incf'
+    || el === 'decf'
+    || el === '*'
+    || el === '/'
+    || el === 'or'
+    || el === '+'
+    || el === '-'
+  );
+}
+
+
 module.exports = {
   LEFT_PARETHENSIS,
   RIGHT_PARETHENSIS,
@@ -63,4 +78,5 @@ module.exports = {
   mapLispOperatorsToJSOperators,
   shouldAddParethensis,
   listLispReservedWords,
+  isOperator,
 };

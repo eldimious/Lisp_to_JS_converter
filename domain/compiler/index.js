@@ -2,44 +2,28 @@ const parserService = require('../parser');
 const {
   mapLispOperatorsToJSOperators,
   shouldAddParethensis,
+  isOperator,
 } = require('../../common/utils');
 const errors = require('../../common/errors');
 
 function init() {
-  function compile(root) {
-    if (!shouldAddParethensis(root[0])) {
-      return `(${root})`;
+  function compile(arr) {
+    if (!shouldAddParethensis(arr[0])) {
+      return `(${arr})`;
     }
     const operators = mapLispOperatorsToJSOperators();
-    switch (root[0]) {
-      case 'defvar':
-      case 'defconstant':
-      case 'if':
-      case 'defun':
-        switch (root[0]) {
-          case 'defvar':
-            return compileDefineExpression(root);
-          case 'defconstant':
-            return compileDefineConstantExpression(root);
-          case 'if':
-            return compileIfExpression(root);
-          case 'defun':
-            return compileFunctionExpression(root);
-        }
-      case '=':
-      case 'and':
-      case 'mod':
-      case 'incf':
-      case 'decf':
-      case '*':
-      case '/':
-      case 'or':
-      case '+':
-      case '-':
-        return compileOperatorExpression(root, operators[root[0]]);
-      default:
-        return `${root[0]}(${[[], ...root.slice(1)].map(n => compile(n)).join(', ')})`;
+    if (arr[0] === 'defvar') {
+      return compileDefineExpression(arr);
+    } else if (arr[0] === 'defconstant') {
+      return compileDefineConstantExpression(arr);
+    } else if (arr[0] === 'defun') {
+      return compileFunctionExpression(arr);
+    } else if (arr[0] === 'if') {
+      return compileIfExpression(arr);
+    } else if (isOperator(arr[0])) {
+      return compileOperatorExpression(arr, operators[arr[0]]);
     }
+    return `${arr[0]}(${[[], ...arr.slice(1)].map(n => compile(n)).join(', ')})`;
   }
 
   function compileDefineExpression(elements) {
