@@ -42,40 +42,40 @@ function init() {
     }
   }
 
-  function compileDefineExpression(node) {
-    return `let ${node[1]} = ${compile(node[2])};`;
+  function compileDefineExpression(elements) {
+    return `let ${elements[1]} = ${compile(elements[2])};`;
   }
 
-  function compileDefineConstantExpression(node) {
-    return `const ${node[1]} = ${compile(node[2])};`;
+  function compileDefineConstantExpression(elements) {
+    return `const ${elements[1]} = ${compile(elements[2])};`;
   }
 
-  function compileIfExpression(node) {
-    if (node.length < 3) {
+  function compileIfExpression(elements) {
+    if (elements.length < 3) {
       throw new errors.BadRequest('If block requires 3 elements');
     }
     let output = '';
     output += '(function() { ';
-    output += `if (${compile(node[1])}) { return ${compile(node[2])}; } `;
-    if (node.length === 4) {
-      output += `else { return ${compile(node[3])}} `;
+    output += `if (${compile(elements[1])}) { return ${compile(elements[2])}; } `;
+    if (elements.length === 4) {
+      output += `else { return ${compile(elements[3])}} `;
     }
     output += '})()';
     return output;
   }
 
-  function compileFunctionExpression(node) {
-    if (node.length < 4) {
+  function compileFunctionExpression(elements) {
+    if (elements.length < 4) {
       throw new errors.BadRequest('Function declaration requires 4 elements');
     }
-    const fnName = node[1];
-    const params = node[2].slice(0).join(', ');
-    const body = node[3];
+    const fnName = elements[1];
+    const params = elements[2].slice(0).join(', ');
+    const body = elements[3];
     return `function ${fnName}(${params}) { return ${compile(body)}; }`;
   }
 
-  function compileOperatorExpression(node, op) {
-    const el = [...[], ...node.slice(1)].map(n => compile(n)).join(` ${op} `);
+  function compileOperatorExpression(elements, op) {
+    const el = [...[], ...elements.slice(1)].map(n => compile(n)).join(` ${op} `);
     return `(${el})`;
   }
 
