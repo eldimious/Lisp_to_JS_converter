@@ -61,7 +61,7 @@ function init() {
     return str;
   }
 
-  function listLexers(input) {
+  function listCharacters(input) {
     lispInput = input;
     let char = getCharacter();
     while (char !== STOP_COMPILE) {
@@ -88,7 +88,7 @@ function init() {
   }
 
   return {
-    listLexers,
+    listCharacters,
   };
 }
 
