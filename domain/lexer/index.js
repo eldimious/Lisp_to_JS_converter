@@ -5,8 +5,8 @@ const {
 } = require('../../common/utils');
 
 
-function init(input) {
-  const lispString = input;
+function init() {
+  let lispInput = '';
   let line = 1;
   let column = 1;
   let pos = 0;
@@ -24,10 +24,10 @@ function init(input) {
   }
 
   function getCharacter() {
-    if (pos >= lispString.length) {
+    if (pos >= lispInput.length) {
       return STOP_COMPILE;
     }
-    return lispString.charAt(pos);
+    return lispInput.charAt(pos);
   }
 
   function getNextCharacter() {
@@ -42,25 +42,27 @@ function init(input) {
   }
 
   function findSpace() {
-    let char = getCharacter();
-    while (isSpace(char)) {
+    const char = getCharacter();
+    if (isSpace(char)) {
       getNextCharacter();
-      char = getCharacter();
+      return findSpace();
     }
+    return;
   }
 
-  function findLexer() {
-    let char = getCharacter();
-    let str = '';
-    while (char !== STOP_COMPILE && char.match(/[a-z0-9\-+=*\/\\.]/)) {
-      str += char;
+  function findLexer(str) {
+    const char = getCharacter();
+    let output = str || '';
+    if (char !== STOP_COMPILE && char.match(/[a-z0-9\-+=*\/\\.]/)) {
+      output += char;
       getNextCharacter();
-      char = getCharacter();
+      return findLexer(output);
     }
     return str;
   }
 
-  function listLexers() {
+  function listLexers(input) {
+    lispInput = input;
     let char = getCharacter();
     while (char !== STOP_COMPILE) {
       if (char === LEFT_PARETHENSIS) {

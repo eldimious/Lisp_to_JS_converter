@@ -4,31 +4,25 @@ const {
 const lexerService = require('../lexer');
 
 function init() {
-  function parse(input) {
-    const lexer = lexerService(input);
-    let token = lexer.listLexers();
-    let form = [];
-    const stack = [];
-    while (token !== STOP_COMPILE) {
-      switch (token[0]) {
-        case 'LEFT_PARETHENSIS':
-          let newform = [];
-          form.push(newform);
-          stack.push(form);
-          form = newform;
-          token = lexer.listLexers();
-          break;
-        case 'RIGHT_PARETHENSIS':
-          form = stack.pop();
-          token = lexer.listLexers();
-          break;
-        default:
-          form.push(token[1]);
-          token = lexer.listLexers();
-          break;
+  const lexerSrv = lexerService();
+  function parse(input, initialNodes = [], initialElements = []) {
+    const listLexers = lexerSrv.listLexers(input);
+    let nodes = initialNodes;
+    const elements = initialElements;
+    if (listLexers !== STOP_COMPILE) {
+      if (listLexers[0] === 'LEFT_PARETHENSIS') {
+        const newNode = [];
+        nodes.push(newNode);
+        elements.push(nodes);
+        nodes = newNode;
+      } else if (listLexers[0] === 'RIGHT_PARETHENSIS') {
+        nodes = elements.pop();
+      } else {
+        nodes.push(listLexers[1]);
       }
+      return parse(input, nodes, elements);
     }
-    return form;
+    return nodes;
   }
 
   return {
