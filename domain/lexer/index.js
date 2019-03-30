@@ -63,26 +63,22 @@ function init() {
 
   function listCharacters(input) {
     lispInput = input;
-    let char = getCharacter();
-    while (char !== STOP_COMPILE) {
+    const char = getCharacter();
+    if (char !== STOP_COMPILE) {
       if (char === LEFT_PARETHENSIS) {
         getNextCharacter();
-        char = getCharacter();
         return ['LEFT_PARETHENSIS', LEFT_PARETHENSIS];
       } else if (char === RIGHT_PARETHENSIS) {
         getNextCharacter();
-        char = getCharacter();
         return ['RIGHT_PARETHENSIS', RIGHT_PARETHENSIS];
       } else if (char.match(/[a-z0-9\-+=*\/\\.]/)) {
-        char = getCharacter();
         return ['CHARACTER', findLexer()];
       } else if (isSpace(char)) {
         findSpace();
-        char = getCharacter();
       } else {
-        char = getCharacter();
         return STOP_COMPILE;
       }
+      return listCharacters(input);
     }
     return STOP_COMPILE;
   }
@@ -91,5 +87,6 @@ function init() {
     listCharacters,
   };
 }
+
 
 module.exports = init;
