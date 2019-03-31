@@ -3,6 +3,10 @@ const RIGHT_PARETHENSIS = ')';
 const CHARACTER = 'CHARACTER';
 const STOP_COMPILE = null;
 
+function regexSupportedChars() {
+  return /[a-z0-9\-+=*><\/\\.]/;
+}
+
 function mapLispOperatorsToJSOperators() {
   return {
     '+': '+',
@@ -13,59 +17,51 @@ function mapLispOperatorsToJSOperators() {
     incf: '+',
     decf: '-',
     '=': '===',
+    '>': '>',
+    '/=': '!==',
+    '<': '<',
+    '<=': '<=',
+    '>=': '>=',
     and: '&&',
     or: '||',
   };
 }
 
-function listLispReservedWords() {
+function listLispOperators() {
   return [
     'and',
     'mod',
     'incf',
     'decf',
-    'defvar',
-    'defconstant',
-    'if',
-    'defun',
     '=',
+    '>',
+    '<',
+    '<=',
+    '>=',
     '+',
     '-',
     '*',
     '/',
+    '/=',
+  ];
+}
+
+function isOperator(el) {
+  return listLispOperators().includes(el);
+}
+
+function listLispReservedWords() {
+  return [
+    'defvar',
+    'defconstant',
+    'if',
+    'defun',
   ];
 }
 
 function shouldAddParethensis(el) {
-  return !(el !== '='
-    && el !== 'and'
-    && el !== 'mod'
-    && el !== 'incf'
-    && el !== 'decf'
-    && el !== 'or'
-    && el !== '+'
-    && el !== '-'
-    && el !== '*'
-    && el !== '/'
-    && el !== 'defvar'
-    && el !== 'defconstant'
-    && el !== 'if'
-    && el !== 'defun'
-  );
-}
-
-
-function isOperator(el) {
-  return (el === '='
-    || el === 'and'
-    || el === 'mod'
-    || el === 'incf'
-    || el === 'decf'
-    || el === '*'
-    || el === '/'
-    || el === 'or'
-    || el === '+'
-    || el === '-'
+  return ([...listLispReservedWords(), ...listLispOperators()]
+    .includes(el)
   );
 }
 
@@ -78,5 +74,7 @@ module.exports = {
   mapLispOperatorsToJSOperators,
   shouldAddParethensis,
   listLispReservedWords,
+  listLispOperators,
   isOperator,
+  regexSupportedChars,
 };

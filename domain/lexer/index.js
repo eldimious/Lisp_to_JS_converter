@@ -2,6 +2,7 @@ const {
   LEFT_PARETHENSIS,
   RIGHT_PARETHENSIS,
   STOP_COMPILE,
+  regexSupportedChars,
 } = require('../../common/utils');
 
 
@@ -53,7 +54,7 @@ function init() {
   function findLexer(str) {
     const char = getCharacter();
     let output = str || '';
-    if (char !== STOP_COMPILE && char.match(/[a-z0-9\-+=*\/\\.]/)) {
+    if (char !== STOP_COMPILE && char.match(regexSupportedChars())) {
       output += char;
       getNextCharacter();
       return findLexer(output);
@@ -71,7 +72,7 @@ function init() {
       } else if (char === RIGHT_PARETHENSIS) {
         getNextCharacter();
         return ['RIGHT_PARETHENSIS', RIGHT_PARETHENSIS];
-      } else if (char.match(/[a-z0-9\-+=*\/\\.]/)) {
+      } else if (char.match(regexSupportedChars())) {
         return ['CHARACTER', findLexer()];
       } else if (isSpace(char)) {
         findSpace();

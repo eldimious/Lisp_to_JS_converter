@@ -2,7 +2,9 @@ const errorHandler = require('../routes/errors');
 const errors = require('../../../common/errors');
 const {
   listLispReservedWords,
+  listLispOperators,
 } = require('../../../common/utils');
+
 
 module.exports = class EndpointValidator {
   constructor() {
@@ -41,7 +43,7 @@ module.exports = class EndpointValidator {
         return errorHandler(new errors.BadRequest(`${result.array({ onlyFirstError: true })[0].msg}`), req, res, next);
       }
       const subString = req.body.input.substring(req.body.input.indexOf('(') + 1);
-      if (!this.settings.customValidators.startsWithAny(listLispReservedWords(), subString)) {
+      if (!this.settings.customValidators.startsWithAny([...listLispReservedWords(), ...listLispOperators()], subString)) {
         return errorHandler(new errors.BadRequest(400, 'You should add a valid lisp input.'), req, res, next);
       }
       return next();
