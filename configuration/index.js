@@ -6,7 +6,7 @@ require('dotenv').config();
 
 
 const config = {
-  httpPort: process.env.HTTP_PORT || 5000,
+  httpPort: process.env.PORT || 5000,
 };
 
 module.exports = config;
