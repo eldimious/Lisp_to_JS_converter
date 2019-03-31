@@ -42,7 +42,7 @@ function init() {
     output += '(function() { ';
     output += `if (${compile(elements[1])}) { return ${compile(elements[2])}; } `;
     if (elements.length === 4) {
-      output += `else { return ${compile(elements[3])}} `;
+      output += `return ${compile(elements[3])} `;
     }
     output += '})()';
     return output;
