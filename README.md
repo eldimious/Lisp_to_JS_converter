@@ -1,4 +1,4 @@
-# Lisp_to_JS_converter_API
+# Lisp_to_JS_converter
 
 ## What is this repository for? ##
 The goal is a service that can convert programs in common lisp into their javascript equivalent.
