@@ -1,3 +1,8 @@
+const {
+  body,
+  param,
+  validationResult,
+} = require('express-validator');
 const errorHandler = require('../routes/errors');
 const errors = require('../../../common/errors');
 const {
@@ -5,48 +10,68 @@ const {
   listLispOperators,
 } = require('../../../common/utils');
 
-
-module.exports = class EndpointValidator {
-  constructor() {
-    this._settings = {
-      customValidators: {
-        isInArray(item, array) {
-          return array.includes(item);
-        },
-        startsWithAny(arr, str) {
-          return arr.some(el => str.startsWith(el));
-        },
-        startsWith(str, check) {
-          return str.startsWith(check);
-        },
-        endsWith(str, check) {
-          return str.endsWith(check);
-        },
-      },
-    };
+const validate = (req, res, next) => {
+  const validationErrors = validationResult(req);
+  if (validationErrors.isEmpty()) {
+    return next();
   }
+  const validationError = validationErrors.array({
+    onlyFirstError: true,
+  })[0];
+  const errMsg = validationError?.msg?.message || 'Bad request';
+  const errStatus = validationError?.msg?.status || 400;
+  return errorHandler(new errors[errStatus](errMsg, 'BAD_BODY_PARAMS'), req, res, next);
+};
 
-  get settings() {
-    return this._settings;
-  }
+const startsWithAny = (arr, str) => arr.some(el => str.startsWith(el));
 
-  set settings(newSettings) {
-    this._settings = newSettings;
-  }
-
-  requireValidLispInput(req, res, next) {
-    req.checkBody('input', 'Input in body params required').notEmpty();
-    req.checkBody('input', 'Input should start with (.').startsWith('(');
-    req.checkBody('input', 'Input should end with ).').endsWith(')');
-    req.getValidationResult().then((result) => {
-      if (!result.isEmpty()) {
-        return errorHandler(new errors.BadRequest(`${result.array({ onlyFirstError: true })[0].msg}`), req, res, next);
+const requireValidLispInput = () => [
+  body('input')
+    .exists()
+    .notEmpty()
+    .withMessage({
+      message: 'input not provided. Make sure you have a "input" property in your body params.',
+      status: 400,
+    })
+    .custom((value) => {
+      if (value.startsWith('(')) {
+        return true;
       }
-      const subString = req.body.input.substring(req.body.input.indexOf('(') + 1);
-      if (!this.settings.customValidators.startsWithAny([...listLispReservedWords(), ...listLispOperators()], subString)) {
-        return errorHandler(new errors.BadRequest(400, 'You should add a valid lisp input.'), req, res, next);
+      return false;
+
+    })
+    .withMessage(() => ({
+      message: 'Input should start with (',
+      status: 400,
+    }))
+    .custom((value) => {
+      if (value.endsWith(')')) {
+        return true;
       }
-      return next();
-    });
-  }
+      return false;
+    })
+    .withMessage(() => ({
+      message: 'Input should end with )',
+      status: 400,
+    }))
+    .custom((value) => {
+      const subString = value.substring(value.indexOf('(') + 1);
+      if (startsWithAny([...listLispReservedWords(), ...listLispOperators()], subString)) {
+        return true;
+      }
+      return false;
+    })
+    .withMessage(() => ({
+      message: 'You should add a valid lisp input.',
+      status: 400,
+    })),
+];
+
+const validateLispInput = () => [
+  requireValidLispInput(),
+  validate,
+];
+
+module.exports = {
+  validateLispInput,
 };

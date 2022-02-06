@@ -7,13 +7,10 @@ const logger = require('morgan');
 const helmet = require('helmet');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
-const expressValidator = require('express-validator');
 const lispRoutes = require('./routes/lisp');
 const errorRoute = require('./routes/errors');
 const swaggerDocument = require('../../swagger');
-const EndpointValidator = require('./middleware/endpointValidator');
 
-const endpointValidator = new EndpointValidator();
 const app = express();
 
 app.disable('x-powered-by');
@@ -23,8 +20,6 @@ app.use(bodyParser.json({ limit: '5mb' }));
 app.use(compress);
 app.use(logger('dev'));
 app.use(cors());
-app.use(expressValidator(endpointValidator.settings));
-
 
 module.exports = (services) => {
   app.use(express.static(path.join(__dirname, 'public')));
