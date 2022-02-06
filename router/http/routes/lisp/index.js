@@ -1,24 +1,30 @@
+/* eslint-disable new-cap */
 const express = require('express');
-const EndpointValidator = require('../../middleware/endpointValidator');
+const {
+  validateLispInput,
+} = require('../../middleware/endpointValidator');
 
-const endpointValidator = new EndpointValidator();
 const router = express.Router({ mergeParams: true });
 
 function init({
   compilerService,
 }) {
-  router.post('/isValidLisp', (...args) => endpointValidator.requireValidLispInput(...args), (req, res) => {
-    return res.send({
+  router.post(
+    '/isValidLisp',
+    validateLispInput(),
+    (req, res) => res.send({
       data: 'Correct LISP input',
-    });
-  });
+    }));
 
-  router.post('/convertToJS', (...args) => endpointValidator.requireValidLispInput(...args), (req, res) => {
-    const result = compilerService.start(req.body.input);
-    return res.send({
-      data: result,
+  router.post(
+    '/convertToJS',
+    validateLispInput(),
+    (req, res) => {
+      const result = compilerService.start(req.body.input);
+      return res.send({
+        data: result,
+      });
     });
-  });
 
   return router;
 }

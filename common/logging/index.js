@@ -1,8 +1,10 @@
 const winston = require('winston');
 const expressWinston = require('express-winston');
 
-const { Logger } = winston;
-
+const getFormat = () => winston.format.combine(
+  winston.format.colorize(),
+  winston.format.json(),
+);
 
 const getTransports = () => {
   const transports = [
@@ -17,8 +19,8 @@ const getTransports = () => {
 const requestLogger = expressWinston.logger({
   level: 'info',
   transports: getTransports(),
+  format: getFormat(),
   colorize: false,
-  expressFormat: true,
   meta: true,
 });
 
@@ -26,23 +28,24 @@ const requestLogger = expressWinston.logger({
 const errorLogger = expressWinston.errorLogger({
   level: 'error',
   transports: getTransports(),
+  format: getFormat(),
 });
 
-
-const logger = new Logger({
+const logger = winston.createLogger({
   level: process.env.NODE_ENV !== 'production' ? 'verbose' : 'info',
+  format: getFormat(),
   transports: getTransports(),
 });
-
 
 module.exports = {
   requestLogger,
   errorLogger,
-  error: logger.error,
-  warn: logger.warn,
-  info: logger.info,
-  log: logger.log,
-  verbose: logger.verbose,
-  debug: logger.debug,
-  silly: logger.silly,
+  raw: logger,
+  error: logger.error.bind(logger),
+  warn: logger.warn.bind(logger),
+  info: logger.info.bind(logger),
+  log: logger.log.bind(logger),
+  verbose: logger.verbose.bind(logger),
+  debug: logger.debug.bind(logger),
+  silly: logger.silly.bind(logger),
 };
